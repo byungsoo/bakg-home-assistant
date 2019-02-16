@@ -1,0 +1,3 @@
+[submodule "nannybot/snips-boost-skill"]
+	path = nannybot/snips-boost-skill
+	url = https://github.com/jykim/snips-boost-skill.git
