@@ -39,7 +39,7 @@ if mymovehub.is_connected():
 
 def move_smooth(motor, time, dir=1, discount=2):
     mymovehub.run_motor_for_time(motor, int(time*UNIT_MOVE_MSEC), UNIT_MOVE_POWER*dir)
-    mymovehub.run_motor_for_time(motor, int(time*UNIT_MOVE_MSEC/discount), UNIT_MOVE_POWER/discount*dir)
+    mymovehub.run_motor_for_time(motor, int(time*UNIT_MOVE_MSEC/discount), int(UNIT_MOVE_POWER/discount*dir))
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
