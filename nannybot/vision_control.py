@@ -31,7 +31,6 @@ if args.get("input_video"):
     for i in range(100):
         try:
             frame = vs.read()[1]
-            # print(frame.shape)
             frames.append(frame)
         except AttributeError:
             break
@@ -40,6 +39,10 @@ elif args.get("input_image"):
     frames = [cv2.imread(args["input_image"])]
 else:
     frames = camera.capture_continuous(rawCapture, format="bgr", use_video_port=True)
+
+
+fourcc = cv2.VideoWriter_fourcc(*'XVID')
+out = cv2.VideoWriter('output.avi',fourcc, 20.0, (640,480))
 
 # time.sleep(1)
 fps = FPS().start()
@@ -55,9 +58,12 @@ for frame in frames:
         rawCapture.truncate(0)
 
         image_for_result = image.copy()
+        cv2.imshow("Input", image)
+        print("Frame captured...")
 
         # use the NCS to acquire predictions
         predictions = vu.detect_face(image)
+        print("Prediction ran...")
         # loop over our predictions
         for (i, pred) in enumerate(predictions):
             # extract prediction data for readability
@@ -85,8 +91,9 @@ for frame in frames:
 
         if args["display"] > 0:
             # display the frame to the screen
+            print("showing image")
             cv2.imshow("Output", image_for_result)
-
+            out.write(image_for_result)
         fps.update()
 
     # if "ctrl+c" is pressed in the terminal, break from the loop
@@ -99,6 +106,7 @@ for frame in frames:
 
 # stop the FPS counter timer
 fps.stop()
+out.release()
 
 # destroy all windows if we are displaying them
 if args["display"] > 0:

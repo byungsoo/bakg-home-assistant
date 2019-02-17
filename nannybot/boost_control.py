@@ -21,7 +21,8 @@ mymovehub = MoveHub(MY_MOVEHUB_ADD, 'BlueZ', MY_BTCTRLR_HCI)
 mymovehub.start()
 mymovehub.subscribe_all()
 mymovehub.listen_hubtilt(MODE_HUBTILT_BASIC)
-
+mymovehub.listen_colordist_sensor(PORT_D)
+    
 if mymovehub.is_connected():
     print(('Is connected: ', mymovehub.is_connected()))
 
@@ -31,7 +32,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe(MQTT_PATH_SS)
 
 UNIT_MOVE_MSEC = 100
-UNIT_MOVE_POWER = 50
+UNIT_MOVE_POWER = 100
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
@@ -76,6 +77,10 @@ client.loop_start()
 
 while(1):
     try:
-        time.sleep(5)
-    except:
+        time.sleep(1)
+        print('Color: {} Distance: {}'.format(mymovehub.last_color_D, mymovehub.last_distance_D))
+        if mymovehub.last_distance_D < 10:
+            mymovehub.run_motor_for_time(MOTOR_AB, UNIT_MOVE_MSEC * (10 - mymovehub.last_distance_D) / 2, -UNIT_MOVE_POWER)
+    except Exception as e:
+        print(e)
         pdb.set_trace()
