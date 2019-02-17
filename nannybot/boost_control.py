@@ -28,6 +28,7 @@ mymovehub.start()
 mymovehub.subscribe_all()
 mymovehub.listen_hubtilt(MODE_HUBTILT_BASIC)
 mymovehub.listen_colordist_sensor(PORT_D)
+mymovehub.listen_angle_sensor(PORT_C)
 
 if mymovehub.is_connected():
     print(('Is connected: ', mymovehub.is_connected()))
@@ -79,7 +80,7 @@ if not args['interactive']:
     while(1):
         try:
             time.sleep(1)
-            print('Color: {} Distance: {}'.format(mymovehub.last_color_D, mymovehub.last_distance_D))
+            print('Color: {} Distance: {} Angle: {}'.format(mymovehub.last_color_D, mymovehub.last_distance_D, mymovehub.last_angle_C))
             if mymovehub.last_distance_D < 10:
                 bu.move_smooth(MOTOR_AB, (10 - mymovehub.last_distance_D) / 2, -1)
         except Exception as e:
