@@ -88,7 +88,7 @@ while(1):
         time.sleep(0.5)
         print('Color: {} Distance: {} Angle: {}'.format(mymovehub.last_color_D, mymovehub.last_distance_D, mymovehub.last_angle_C))
         if mymovehub.last_distance_D < 10:
-            move_smooth(MOTOR_AB, (10 - mymovehub.last_distance_D) / 2, -1)
+            move_smooth(MOTOR_AB, int((10 - mymovehub.last_distance_D) / 2), -1)
     except Exception as e:
         print(e)
         pdb.set_trace()
