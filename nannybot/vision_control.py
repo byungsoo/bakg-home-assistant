@@ -43,6 +43,7 @@ else:
 
 fourcc = cv2.VideoWriter_fourcc(*'XVID')
 out = cv2.VideoWriter('output.avi',fourcc, 20.0, (640,480))
+# out2 = cv2.VideoWriter('output_anno.avi',fourcc, 20.0, (640,480))
 
 # time.sleep(1)
 fps = FPS().start()
@@ -59,11 +60,11 @@ for frame in frames:
 
         image_for_result = image.copy()
         cv2.imshow("Input", image)
-        print("Frame captured...")
+        # print("Frame captured...")
 
         # use the NCS to acquire predictions
         predictions = vu.detect_face(image)
-        print("Prediction ran...")
+        # print("Prediction ran...")
         # loop over our predictions
         for (i, pred) in enumerate(predictions):
             # extract prediction data for readability
@@ -92,7 +93,7 @@ for frame in frames:
         if args["display"] > 0:
             # display the frame to the screen
             print("showing image")
-            cv2.imshow("Output", image_for_result)
+            # cv2.imshow("Output", image_for_result)
             out.write(image_for_result)
         fps.update()
 

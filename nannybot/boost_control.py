@@ -6,6 +6,7 @@ import json
 import time
 import os
 import subprocess
+import argparse
 from random import randint
 from picamera import PiCamera
 from time import sleep
@@ -13,6 +14,12 @@ from time import sleep
 from pyb00st.movehub import MoveHub
 from pyb00st.constants import *
 from time import sleep
+
+# construct the argument parser and parse the arguments
+ap = argparse.ArgumentParser()
+ap.add_argument("-i", "--interactive", type=str,
+                help="interactive mode")
+args = vars(ap.parse_args())
 
 MY_MOVEHUB_ADD = '00:16:53:A1:6F:4F'
 MY_BTCTRLR_HCI = 'hci0'
@@ -22,7 +29,7 @@ mymovehub.start()
 mymovehub.subscribe_all()
 mymovehub.listen_hubtilt(MODE_HUBTILT_BASIC)
 mymovehub.listen_colordist_sensor(PORT_D)
-    
+
 if mymovehub.is_connected():
     print(('Is connected: ', mymovehub.is_connected()))
 
@@ -31,8 +38,6 @@ def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
     client.subscribe(MQTT_PATH_SS)
 
-UNIT_MOVE_MSEC = 100
-UNIT_MOVE_POWER = 100
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
@@ -42,15 +47,11 @@ def on_message(client, userdata, msg):
         cmd = json.loads(msg.payload.decode())
         print(cmd)
         if cmd['dir'] == 'left':
-            mymovehub.run_motor_for_time(MOTOR_B, int(cmd['time']*UNIT_MOVE_MSEC), UNIT_MOVE_POWER)
+            bu.move_smooth(MOTOR_B, cmd['time'])
         elif cmd['dir'] == 'right':
-            mymovehub.run_motor_for_time(MOTOR_A, int(cmd['time']*UNIT_MOVE_MSEC), UNIT_MOVE_POWER)
+            bu.move_smooth(MOTOR_A, cmd['time'])
         elif cmd['dir'] == 'front':
-            mymovehub.run_motor_for_time(MOTOR_AB, int(cmd['time']*UNIT_MOVE_MSEC), UNIT_MOVE_POWER)
-        elif msg.payload == b'move front':
-            mymovehub.run_motor_for_time(MOTOR_AB, UNIT_MOVE_MSEC, UNIT_MOVE_POWER)
-        elif msg.payload == b'move back':
-            mymovehub.run_motor_for_time(MOTOR_AB, UNIT_MOVE_MSEC, -UNIT_MOVE_POWER)
+            bu.move_smooth(MOTOR_AB, cmd['time'])
         elif msg.payload == b'move around':
             mymovehub.run_motors_for_time(MOTOR_AB, UNIT_MOVE_MSEC*2, UNIT_MOVE_POWER, -UNIT_MOVE_POWER)
         elif msg.payload == b'move random':
@@ -75,12 +76,13 @@ client.on_message = on_message
 client.connect(MQTT_SERVER, 1883, 60)
 client.loop_start()
 
-while(1):
-    try:
-        time.sleep(1)
-        print('Color: {} Distance: {}'.format(mymovehub.last_color_D, mymovehub.last_distance_D))
-        if mymovehub.last_distance_D < 10:
-            mymovehub.run_motor_for_time(MOTOR_AB, UNIT_MOVE_MSEC * (10 - mymovehub.last_distance_D) / 2, -UNIT_MOVE_POWER)
-    except Exception as e:
-        print(e)
-        pdb.set_trace()
+if not args['interactive']:
+    while(1):
+        try:
+            time.sleep(1)
+            print('Color: {} Distance: {}'.format(mymovehub.last_color_D, mymovehub.last_distance_D))
+            if mymovehub.last_distance_D < 10:
+                bu.move_smooth(MOTOR_AB, (10 - mymovehub.last_distance_D) / 2, -1)
+        except Exception as e:
+            print(e)
+            pdb.set_trace()
