@@ -14,12 +14,15 @@ from time import sleep
 from pyb00st.movehub import MoveHub
 from pyb00st.constants import *
 from time import sleep
-import boost_utils as bu
+# import boost_utils as bu
 
 # construct the argument parser and parse the arguments
 # ap = argparse.ArgumentParser()
 # ap.add_argument("-i", "--interactive", type=bool, default=False, help="interactive mode")
 # args = vars(ap.parse_args())
+
+UNIT_MOVE_MSEC = 100
+UNIT_MOVE_POWER = 100
 
 MY_MOVEHUB_ADD = '00:16:53:A1:6F:4F'
 MY_BTCTRLR_HCI = 'hci0'
@@ -34,11 +37,14 @@ mymovehub.listen_angle_sensor(PORT_C)
 if mymovehub.is_connected():
     print(('Is connected: ', mymovehub.is_connected()))
 
+def move_smooth(motor, time, dir=1, discount=2):
+    mymovehub.run_motor_for_time(motor, int(time*UNIT_MOVE_MSEC), UNIT_MOVE_POWER*dir)
+    mymovehub.run_motor_for_time(motor, int(time*UNIT_MOVE_MSEC/discount), UNIT_MOVE_POWER/discount*dir)
+
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
     client.subscribe(MQTT_PATH_SS)
-
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
@@ -48,11 +54,11 @@ def on_message(client, userdata, msg):
         cmd = json.loads(msg.payload.decode())
         print(cmd)
         if cmd['dir'] == 'left':
-            bu.move_smooth(MOTOR_B, cmd['time'])
+            move_smooth(MOTOR_B, cmd['time'])
         elif cmd['dir'] == 'right':
-            bu.move_smooth(MOTOR_A, cmd['time'])
+            move_smooth(MOTOR_A, cmd['time'])
         elif cmd['dir'] == 'front':
-            bu.move_smooth(MOTOR_AB, cmd['time'])
+            move_smooth(MOTOR_AB, cmd['time'])
         elif msg.payload == b'move around':
             mymovehub.run_motors_for_time(MOTOR_AB, UNIT_MOVE_MSEC*2, UNIT_MOVE_POWER, -UNIT_MOVE_POWER)
         elif msg.payload == b'move random':
@@ -82,7 +88,7 @@ while(1):
         time.sleep(0.5)
         print('Color: {} Distance: {} Angle: {}'.format(mymovehub.last_color_D, mymovehub.last_distance_D, mymovehub.last_angle_C))
         if mymovehub.last_distance_D < 10:
-            bu.move_smooth(MOTOR_AB, (10 - mymovehub.last_distance_D) / 2, -1)
+            move_smooth(MOTOR_AB, (10 - mymovehub.last_distance_D) / 2, -1)
     except Exception as e:
         print(e)
         pdb.set_trace()
