@@ -17,8 +17,7 @@ from time import sleep
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
-ap.add_argument("-i", "--interactive", type=str,
-                help="interactive mode")
+ap.add_argument("-i", "--interactive", type=bool, default=False, help="interactive mode")
 args = vars(ap.parse_args())
 
 MY_MOVEHUB_ADD = '00:16:53:A1:6F:4F'
