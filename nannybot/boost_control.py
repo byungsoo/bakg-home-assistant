@@ -14,11 +14,12 @@ from time import sleep
 from pyb00st.movehub import MoveHub
 from pyb00st.constants import *
 from time import sleep
+import boost_utils as bu
 
 # construct the argument parser and parse the arguments
-ap = argparse.ArgumentParser()
-ap.add_argument("-i", "--interactive", type=bool, default=False, help="interactive mode")
-args = vars(ap.parse_args())
+# ap = argparse.ArgumentParser()
+# ap.add_argument("-i", "--interactive", type=bool, default=False, help="interactive mode")
+# args = vars(ap.parse_args())
 
 MY_MOVEHUB_ADD = '00:16:53:A1:6F:4F'
 MY_BTCTRLR_HCI = 'hci0'
@@ -76,13 +77,12 @@ client.on_message = on_message
 client.connect(MQTT_SERVER, 1883, 60)
 client.loop_start()
 
-if not args['interactive']:
-    while(1):
-        try:
-            time.sleep(1)
-            print('Color: {} Distance: {} Angle: {}'.format(mymovehub.last_color_D, mymovehub.last_distance_D, mymovehub.last_angle_C))
-            if mymovehub.last_distance_D < 10:
-                bu.move_smooth(MOTOR_AB, (10 - mymovehub.last_distance_D) / 2, -1)
-        except Exception as e:
-            print(e)
-            pdb.set_trace()
+while(1):
+    try:
+        time.sleep(0.5)
+        print('Color: {} Distance: {} Angle: {}'.format(mymovehub.last_color_D, mymovehub.last_distance_D, mymovehub.last_angle_C))
+        if mymovehub.last_distance_D < 10:
+            bu.move_smooth(MOTOR_AB, (10 - mymovehub.last_distance_D) / 2, -1)
+    except Exception as e:
+        print(e)
+        pdb.set_trace()
