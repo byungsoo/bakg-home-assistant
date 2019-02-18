@@ -14,6 +14,7 @@ def on_message(client, userdata, msg):
     print(msg.topic+" "+str(msg.payload))
 
 def send_cmd(dir, time=1):
+    print("[send_cmd] {} {}".format(dir, time))
     publish.single(MQTT_PATH_SS, json.dumps({"dir":dir, "time":time}) , hostname=MQTT_SERVER)
 
 

@@ -54,9 +54,9 @@ def on_message(client, userdata, msg):
         cmd = json.loads(msg.payload.decode())
         print(cmd)
         if cmd['dir'] == 'left':
-            move_smooth(MOTOR_A, cmd['time'])
-        elif cmd['dir'] == 'right':
             move_smooth(MOTOR_B, cmd['time'])
+        elif cmd['dir'] == 'right':
+            move_smooth(MOTOR_A, cmd['time'])
         elif cmd['dir'] == 'front':
             move_smooth(MOTOR_AB, cmd['time'])
         elif msg.payload == b'move around':
