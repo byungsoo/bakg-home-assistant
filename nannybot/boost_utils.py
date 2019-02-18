@@ -5,12 +5,6 @@ import paho.mqtt.publish as publish
 MQTT_SERVER = "localhost"
 MQTT_PATH_SS = "lifidea/boost/request"
 
-client = mqtt.Client()
-client.on_connect = on_connect
-client.on_message = on_message
-
-client.connect(MQTT_SERVER, 1883, 60)
-
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
@@ -21,3 +15,9 @@ def on_message(client, userdata, msg):
 
 def send_cmd(dir, time=1):
     publish.single(MQTT_PATH_SS, json.dumps({"dir":dir, "time":time}) , hostname=MQTT_SERVER)
+
+
+client = mqtt.Client()
+client.on_connect = on_connect
+client.on_message = on_message
+client.connect(MQTT_SERVER, 1883, 60)
