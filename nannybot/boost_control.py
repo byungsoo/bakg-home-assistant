@@ -21,7 +21,7 @@ from time import sleep
 # ap.add_argument("-i", "--interactive", type=bool, default=False, help="interactive mode")
 # args = vars(ap.parse_args())
 
-UNIT_MOVE_MSEC = 100
+UNIT_MOVE_MSEC = 150
 UNIT_MOVE_POWER = 100
 
 MY_MOVEHUB_ADD = '00:16:53:A1:6F:4F'
@@ -37,9 +37,9 @@ mymovehub.listen_angle_sensor(PORT_C)
 if mymovehub.is_connected():
     print(('Is connected: ', mymovehub.is_connected()))
 
-def move_smooth(motor, time, dir=1, discount=2):
+def move_smooth(motor, time, dir=1, discount=0.75):
     mymovehub.run_motor_for_time(motor, int(time*UNIT_MOVE_MSEC), UNIT_MOVE_POWER*dir)
-    mymovehub.run_motor_for_time(motor, int(time*UNIT_MOVE_MSEC/discount), int(UNIT_MOVE_POWER/discount*dir))
+    mymovehub.run_motor_for_time(motor, int(time*UNIT_MOVE_MSEC/discount), int(UNIT_MOVE_POWER*discount*dir))
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -54,9 +54,9 @@ def on_message(client, userdata, msg):
         cmd = json.loads(msg.payload.decode())
         print(cmd)
         if cmd['dir'] == 'left':
-            move_smooth(MOTOR_B, cmd['time'])
-        elif cmd['dir'] == 'right':
             move_smooth(MOTOR_A, cmd['time'])
+        elif cmd['dir'] == 'right':
+            move_smooth(MOTOR_B, cmd['time'])
         elif cmd['dir'] == 'front':
             move_smooth(MOTOR_AB, cmd['time'])
         elif msg.payload == b'move around':
