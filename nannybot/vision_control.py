@@ -80,9 +80,9 @@ for frame in frames:
                 print(xloc, yloc, xsize, ysize)
 
                 if xloc < 0.3:
-                    bu.send_cmd('left', (0.5-xloc)*6)
+                    bu.send_cmd('left', (0.5-xloc)*3)
                 elif xloc > 0.7:
-                    bu.send_cmd('right', (xloc-0.5)*6)
+                    bu.send_cmd('right', (xloc-0.5)*3)
                 elif xsize < 0.5:
                     bu.send_cmd('front', 3)
 
