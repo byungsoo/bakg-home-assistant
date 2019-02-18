@@ -100,7 +100,7 @@ def init_picamera(res = (640, 480)):
     camera.resolution = res
     camera.framerate = 32
     rawCapture = PiRGBArray(camera, size=res)
-    camera.rotation = 180
+    # camera.rotation = 180
     time.sleep(0.1)
 
     return (camera, rawCapture)
