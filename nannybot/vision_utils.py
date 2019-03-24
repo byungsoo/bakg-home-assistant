@@ -4,6 +4,7 @@ from picamera.array import PiRGBArray
 from picamera import PiCamera
 import cv2
 import pdb
+from datetime import datetime
 
 genet = cv2.dnn.readNet('models/age-gender-recognition-retail-0013.xml', 'models/age-gender-recognition-retail-0013.bin')
 genet.setPreferableTarget(cv2.dnn.DNN_TARGET_MYRIAD)
@@ -58,6 +59,7 @@ def detect_face(frame, thr_conf=.5, detect_extra=False):
                 frame_face = frame[ymin:ymax, xmin:xmax]
                 frame_face_small = cv2.resize(frame_face, (62, 62))
                 cv2.imshow("Cropped", frame_face_small)
+                cv2.imwrite("face_%s.jpg" % datetime.utcnow().strftime('%Y-%m-%d-%H%M%S-%f'), frame_face)
                 gender = detect_gender(frame_face_small)
                 emotion = detect_emotion(frame_face_small)
                 prediction = (conf, pred_boxpts, gender, emotion)

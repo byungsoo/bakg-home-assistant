@@ -27,15 +27,19 @@ UNIT_MOVE_POWER = 100
 MY_MOVEHUB_ADD = '00:16:53:A1:6F:4F'
 MY_BTCTRLR_HCI = 'hci0'
 
-mymovehub = MoveHub(MY_MOVEHUB_ADD, 'BlueZ', MY_BTCTRLR_HCI)
-mymovehub.start()
-mymovehub.subscribe_all()
-mymovehub.listen_hubtilt(MODE_HUBTILT_BASIC)
-mymovehub.listen_colordist_sensor(PORT_D)
-mymovehub.listen_angle_sensor(PORT_C)
+def init_movehub():
+    mh = MoveHub(MY_MOVEHUB_ADD, 'BlueZ', MY_BTCTRLR_HCI)
+    mh.start()
+    mh.subscribe_all()
+    mh.listen_hubtilt(MODE_HUBTILT_BASIC)
+    mh.listen_colordist_sensor(PORT_D)
+    mh.listen_angle_sensor(PORT_C)
 
-if mymovehub.is_connected():
-    print(('Is connected: ', mymovehub.is_connected()))
+    if mh.is_connected():
+        print(('Is connected: ', mh.is_connected()))
+    return mh
+
+mymovehub = init_movehub()
 
 def move_smooth(motor, time, dir=1, discount=0.75):
     mymovehub.run_motor_for_time(motor, int(time*UNIT_MOVE_MSEC), UNIT_MOVE_POWER*dir)

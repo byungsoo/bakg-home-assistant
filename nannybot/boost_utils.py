@@ -5,6 +5,13 @@ import paho.mqtt.publish as publish
 MQTT_SERVER = "localhost"
 MQTT_PATH_SS = "lifidea/boost/request"
 
+
+UNIT_MOVE_MSEC = 150
+UNIT_MOVE_POWER = 100
+
+MY_MOVEHUB_ADD = '00:16:53:A1:6F:4F'
+MY_BTCTRLR_HCI = 'hci0'
+
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
