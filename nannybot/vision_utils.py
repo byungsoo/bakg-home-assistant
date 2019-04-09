@@ -6,6 +6,7 @@ import cv2
 import pdb
 from datetime import datetime
 
+OUTPUT_FACE_PATH = "/home/pi/dev/nannybot/output_face"
 OUTPUT_PATH = "/home/pi/dev/nannybot/output"
 genet = cv2.dnn.readNet('models/age-gender-recognition-retail-0013.xml', 'models/age-gender-recognition-retail-0013.bin')
 genet.setPreferableTarget(cv2.dnn.DNN_TARGET_MYRIAD)
@@ -60,7 +61,8 @@ def detect_face(frame, thr_conf=.5, detect_extra=False):
             frame_face_small = cv2.resize(frame_face, (62, 62))
             cv2.imshow("Cropped", frame_face_small)
             print("Export face detection output...")
-            cv2.imwrite("%s/face_%s.jpg" % (OUTPUT_PATH, datetime.utcnow().strftime('%Y-%m-%d-%H%M%S-%f')), frame_face)
+            cv2.imwrite("%s/face_%s.jpg"  % (OUTPUT_FACE_PATH, datetime.utcnow().strftime('%Y-%m-%d-%H%M%S-%f')), frame_face)
+            cv2.imwrite("%s/image_%s.jpg" % (OUTPUT_PATH, datetime.utcnow().strftime('%Y-%m-%d-%H%M%S-%f')), frame)
             if detect_extra:
                 gender = detect_gender(frame_face_small)
                 emotion = detect_emotion(frame_face_small)
